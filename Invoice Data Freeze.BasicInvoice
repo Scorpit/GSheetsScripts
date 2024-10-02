@@ -1,0 +1,30 @@
+// For use with basic invoice is meant to freeze import data once template has been copied. Sript runs when G1 is updated to 1. Warning this delete import formula and replaces it with a static value.
+
+function lockImportedValue() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var g1 = sheet.getRange("G1").getValue(); // Check the value of G1
+  var targetCell = sheet.getRange("F4"); // The cell where your INDEX formula is located (F4)
+  
+  // If G1 is 1, set the value and lock it
+  if (g1 == 1) {
+    var currentFormula = targetCell.getFormula(); // Get the formula in F4
+    
+    // If the target cell contains the INDEX + IMPORTRANGE formula, calculate and replace with static value
+    if (currentFormula.includes("IMPORTRANGE")) { 
+      // Replace this with your INDEX + IMPORTRANGE logic
+      var importedValue = calculateIndexValue(); // Call the function to get the value
+      targetCell.setValue(importedValue); // Replace the formula with the static value
+    }
+  }
+}
+
+// Function to calculate the INDEX + IMPORTRANGE value
+function calculateIndexValue() {
+  var externalSheet = SpreadsheetApp.openById("1YyXdANl0lpM_MjUzs7a3UCt8hyhKinla0SP2kn2PvUM");
+  var invoiceSheet = externalSheet.getSheetByName("Invoices");
+  var invoiceData = invoiceSheet.getRange("I:I").getValues(); // Get values from column I
+  var filteredData = invoiceData.filter(String); // Filter out empty cells
+  var lastInvoiceNumber = filteredData[filteredData.length - 1]; // Get the last non-empty value
+  
+  return lastInvoiceNumber; // Return the value to be set in F4
+}
